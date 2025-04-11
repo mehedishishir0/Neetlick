@@ -4,9 +4,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Link } from "react-router-dom";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "./ui/button";
+import { useSelector } from "react-redux";
 
-const CommentDialog = ({ open, setOpne }) => {
+const CommentDialog = ({ open, setOpne, post }) => {
   const [text, setText] = useState("");
+  const { user } = useSelector((store) => store.auth);
 
   const onChangeEventHandelar = (e) => {
     const inputText = e.target.value;
@@ -19,6 +21,7 @@ const CommentDialog = ({ open, setOpne }) => {
   const sendMessageHandelar = async () => {
     alert(text);
   };
+
   return (
     <div>
       <Dialog open={open}>
@@ -29,7 +32,7 @@ const CommentDialog = ({ open, setOpne }) => {
           <div className="flex flex-1">
             <div className="w-1/2">
               <img
-                src="https://handletheheat.com/wp-content/uploads/2015/03/Best-Birthday-Cake-with-milk-chocolate-buttercream-SQUARE.jpg"
+                src={post?.image}
                 alt=""
                 className="w-full h-full object-cover rounded-lg"
               />
@@ -39,12 +42,14 @@ const CommentDialog = ({ open, setOpne }) => {
                 <div className="flex gap-3 items-center">
                   <Link>
                     <Avatar>
-                      <AvatarImage src="" alt="" />
+                      <AvatarImage src={user?.profilePic} alt="" />
                       <AvatarFallback>Cn</AvatarFallback>
                     </Avatar>
                   </Link>
                   <div>
-                    <Link className="font-semibold text-xs ">username</Link>
+                    <Link className="font-semibold text-xs ">
+                      {user?.username}
+                    </Link>
                   </div>
                 </div>
                 <Dialog>
@@ -62,10 +67,7 @@ const CommentDialog = ({ open, setOpne }) => {
                 </Dialog>
               </div>
               <hr className="border " />
-              <div className="flex-1 overflow-y-auto max-h-96 p-4">
-                comment this comment this comment this comment this comment this
-                comment this comment this
-              </div>
+              <div className="flex-1 overflow-y-auto max-h-96 p-4"></div>
               <div className="p-4 ">
                 <div className="flex items-center gap-2">
                   <input

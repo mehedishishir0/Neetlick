@@ -189,7 +189,7 @@ exports.getCommentByPost = async (req, res, next) => {
 exports.deletePost = async (req, res, next) => {
   try {
     const postId = req.params.id;
-    const authorId = req.userId;
+    const authorId = req.userid;
     const post = await Post.findById(postId);
     if (!post) {
       throw createError(404, "Post not found");

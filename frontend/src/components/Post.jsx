@@ -7,12 +7,19 @@ import { FaHeart } from "react-icons/fa";
 import { CiHeart } from "react-icons/ci";
 import { useState } from "react";
 import CommentDialog from "./CommentDialog";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { useAppContext } from "@/context/appContext";
+import { toast } from "sonner";
+import { setPost } from "@/redux/postSlice";
 const Post = ({ post }) => {
   const [text, setText] = useState("");
   const [open, setOpne] = useState(false);
+  const [menu, setMenu] = useState(false);
+  const { posts } = useSelector((store) => store.post);
+  const { url } = useAppContext();
   const { user } = useSelector((store) => store.auth);
-
+  const dispatch = useDispatch();
   const changeEventHandelar = (e) => {
     const inputText = e.target.value;
     if (inputText.trim()) {
@@ -21,6 +28,24 @@ const Post = ({ post }) => {
       setText("");
     }
   };
+
+  const deleteHandelar = async () => {
+    await axios
+      .post(`${url}/api/v2/post/delete/${post?._id}`)
+      .then((res) => {
+        toast.success(res.data.message);
+        const updatedPostData = posts?.filter(
+          (postItem) => postItem._id !== post._id
+        );
+        dispatch(setPost(updatedPostData));
+        setMenu(false);
+      })
+      .catch((err) => {
+        toast.error(err.res.data.message);
+        console.log(err.res.data.message);
+      });
+  };
+
   return (
     <div className="my-8 w-full max-w-sm mx-auto">
       <div className="flex items-center justify-between">
@@ -34,11 +59,17 @@ const Post = ({ post }) => {
           </Avatar>
           <h2>{post.author?.username}</h2>
         </div>
-        <Dialog>
+        <Dialog open={menu}>
           <DialogTrigger asChild>
-            <MoreHorizontal className="cursor-pointer" />
+            <MoreHorizontal
+              onClick={() => setMenu(true)}
+              className="cursor-pointer"
+            />
           </DialogTrigger>
-          <DialogContent className="flex flex-col items-center text-sm text-center">
+          <DialogContent
+            onInteractOutside={() => setMenu(false)}
+            className="flex flex-col items-center text-sm text-center"
+          >
             <Button
               variant="ghost"
               className="cursor-pointer w-fit text-[#ED4956] font-bold"
@@ -49,7 +80,11 @@ const Post = ({ post }) => {
               Add to favorites
             </Button>
             {user && user?._id === post?.author._id && (
-              <Button variant="ghost" className="cursor-pointer w-fit ">
+              <Button
+                onClick={deleteHandelar}
+                variant="ghost"
+                className="cursor-pointer w-fit "
+              >
                 Delete
               </Button>
             )}
@@ -83,7 +118,7 @@ const Post = ({ post }) => {
       >
         {post.comments.length} Comments
       </span>
-      <CommentDialog open={open} setOpne={setOpne} />
+      <CommentDialog open={open} setOpne={setOpne} post={post} />
       <div className="flex justify-between items-center">
         <input
           type="text"
