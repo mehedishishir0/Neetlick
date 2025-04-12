@@ -103,7 +103,7 @@ exports.getPostById = async (req, res, next) => {
 
 exports.likepost = async (req, res, next) => {
   try {
-    const sendLike = req.userId;
+    const sendLike = req.userid;
     const postId = req.params.id;
     const post = await Post.findById(postId);
     if (!post) {
@@ -122,7 +122,7 @@ exports.likepost = async (req, res, next) => {
 };
 exports.dislikepost = async (req, res, next) => {
   try {
-    const sendLike = req.userId;
+    const sendLike = req.userid;
     const postId = req.params.id;
     const post = await Post.findById(postId);
     if (!post) {
@@ -143,7 +143,7 @@ exports.dislikepost = async (req, res, next) => {
 exports.addComments = async (req, res, next) => {
   try {
     const postId = req.params.id;
-    const sendComment = req.userId;
+    const sendComment = req.userid;
     const { text } = req.body;
     if (!text) {
       throw createError(400, "Please provide a comment");
@@ -215,7 +215,7 @@ exports.deletePost = async (req, res, next) => {
 exports.bookMarksPost = async (req, res, next) => {
   try {
     const postId = req.params.id;
-    const authorId = req.userId;
+    const authorId = req.userid;
     const post = await Post.findById(postId);
     if (!post) {
       throw createError(404, "Post not found");
